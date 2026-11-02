@@ -1,0 +1,245 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{newtxtext,newtxmath}   % Times text and maths
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{amssymb}               % \checkmark
+\usepackage{pifont}                % \ding{55}
+\usepackage{enumitem}
+\usepackage[labelfont=bf,labelsep=period,skip=4pt]{caption}
+\newcommand{\cmark}{\checkmark}
+\newcommand{\xmark}{\ding{55}}
+\setlist{nosep,leftmargin=1.4em}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+{\large\bfseries Biomarker-Token Vision Transformer (BT-ViT): first full run, architecture and variants}
+\end{center}
+
+%% =========================================================================================
+\section*{1\quad Results of the first full BT-ViT run}
+
+The first full BT-ViT run (v1) reached its best validation AUC of 0.944 at epoch~44 of 50. The decision
+threshold was fixed on the validation set; the two external datasets were never seen during training.
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\caption{BT-ViT v1: glaucoma classification.}
+\label{tab:r-cls}
+\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Set & $n$ (glaucoma) & AUC & Accuracy & Sensitivity & Specificity & ECE \\
+\midrule
+Validation              & 232 (39)  & 0.944 & 0.875 & 0.92 & 0.87 & 0.066 \\
+Internal test           & 290 (50)  & 0.936 & 0.821 & 0.90 & 0.80 & 0.102 \\
+RIM-ONE (external)      & 485 (172) & 0.892 & 0.829 & 0.79 & 0.85 & 0.066 \\
+DRISHTI-GS (external)   & 101 (70)  & 0.825 & 0.743 & 0.73 & 0.77 & 0.190 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\item[] Threshold (Youden index) fitted on the validation set and applied unchanged to all other sets.
+ECE, expected calibration error (10 bins). No test-time augmentation.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\caption{BT-ViT v1: segmentation by the model's own decoder.}
+\label{tab:r-seg}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Set & Disc Dice & Cup Dice & vCDR error \\
+\midrule
+Internal test & 0.953 & 0.855 & 0.066 \\
+RIM-ONE       & 0.924 & 0.707 & 0.095 \\
+DRISHTI-GS    & 0.966 & 0.779 & 0.130 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\item[] Foreground Dice averaged per image. vCDR error: mean absolute difference between the model's
+vertical cup-to-disc ratio and that computed from the expert masks.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\paragraph{Interpretation.}
+\begin{itemize}
+\item \emph{The model generalises.} The AUC falls only from 0.936 on the internal test set to 0.892 on
+RIM-ONE, with no tuning on that dataset, and cup segmentation transfers well.
+\item \emph{DRISHTI-GS is the weakest set.} Its AUC is 0.825 and the validation threshold transfers poorly
+(19 glaucomatous eyes missed). The larger vCDR error there (0.130) suggests that DRISHTI-GS cup annotations
+differ systematically from those of ORIGA and REFUGE.
+\end{itemize}
+
+%% =========================================================================================
+\clearpage
+\section*{2\quad Architecture and data flow}
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\caption{BT-ViT v1: data flow (batch dimension $B$ omitted from shapes).}
+\label{tab:flow}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l p{9.6cm} l@{}}
+\toprule
+Stage & Operation & Output shape \\
+\midrule
+Input & Disc-centred ROI, RGB + CLAHE, ImageNet-normalised & $3{\times}224{\times}224$ \\
+\midrule
+\multirow{4}{*}{\shortstack[l]{\ding{172}\ Conv stem}}
+ & Block 1: [Conv$3{\times}3$, BN, GELU]$\times$2, stride 2, $3\to32$ (skip $s_1$) & $32{\times}112{\times}112$ \\
+ & Block 2: same, stride 2, $32\to64$ (skip $s_2$) & $64{\times}56{\times}56$ \\
+ & Block 3: same, stride 2, $64\to128$ (skip $s_3$) & $128{\times}28{\times}28$ \\
+ & Patch projection: Conv$2{\times}2$, stride 2, $128\to192$; flatten to 196 patch tokens & $196{\times}192$ \\
+\midrule
+\ding{173}\ Token assembly & Prepend [CLS]; add positional embedding (DeiT-Tiny, $14{\times}14$ grid) & $197{\times}192$ \\
+\midrule
+\ding{174}\ Blocks 1--4 & Pre-norm ViT blocks (DeiT-Tiny weights): LN $\to$ multi-head self-attention
+(3 heads $\times$ 64) $\to$ residual; LN $\to$ MLP $192\to768\to192$ (GELU) $\to$ residual; stochastic depth 0.1
+& $197{\times}192$ \\
+\midrule
+\multirow{5}{*}{\shortstack[l]{\ding{175}\ Segmentation\\\phantom{\ding{175}\ }decoder}}
+ & Reshape the 196 patch tokens of block 4 & $192{\times}14{\times}14$ \\
+ & $\uparrow$2, concatenate $s_3$, ConvBlock $320\to128$ & $128{\times}28{\times}28$ \\
+ & $\uparrow$2, concatenate $s_2$, ConvBlock $192\to64$ & $64{\times}56{\times}56$ \\
+ & $\uparrow$2, concatenate $s_1$, ConvBlock $96\to32$ & $32{\times}112{\times}112$ \\
+ & Conv$1{\times}1$ to 3 classes, $\uparrow$2 (bilinear); softmax: $P_{\mathrm{disc}}=p_1+p_2$,
+ $P_{\mathrm{cup}}=p_2$ & $3{\times}224{\times}224$ \\
+\midrule
+\multirow{4}{*}{\shortstack[l]{\ding{176}\ Differentiable\\\phantom{\ding{176}\ }biomarkers}}
+ & Cup--disc group: area CDR, vCDR, hCDR & 3 \\
+ & Rim group: rim fractions (I, S, N+T), NRR, ISNT violation & 5 \\
+ & Size group: disc area, disc ellipticity & 2 \\
+ & Edge group: gradient strength on disc and cup boundaries; all z-scored with training-set statistics
+ from the expert masks & 2 \\
+\midrule
+\ding{177}\ Clinical tokens & Each group $\to$ MLP ($k\to192\to192$, GELU) + learned type embedding;
+concatenate [CLS | 196 patches | 4 clinical] & $201{\times}192$ \\
+\midrule
+\ding{178}\ Blocks 5--8 & As \ding{174}, with the rim-guided attention bias of Eq.~(\ref{eq:rim}); then final LayerNorm
+& $201{\times}192$ \\
+\midrule
+\ding{179}\ Head & concat(CLS token, mean of the 4 clinical tokens) $\to$ Linear $384\to192$ $\to$ GELU $\to$
+Dropout 0.2 $\to$ Linear $192\to2$ $\to$ softmax & 2 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\item[] Outputs: $P(\text{glaucoma})$, the disc/cup segmentation masks and the 12 biomarkers for the clinical
+report. ConvBlock = [Conv$3{\times}3$, BN, GELU]$\times$2; $\uparrow$2 = bilinear upsampling.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\noindent\textbf{Rim-guided attention.} The rim prior $R=\mathrm{avgpool}_{14\times14}(P_{\mathrm{disc}}-P_{\mathrm{cup}})$,
+scaled to a maximum of 1 and detached from the gradient, biases the attention of the classification token
+towards the neuroretinal rim in each of blocks 5--8:
+\begin{equation}
+\label{eq:rim}
+A_{\mathrm{CLS},j}=\operatorname{softmax}_j\!\left(\frac{q_{\mathrm{CLS}}\,k_j^{\top}}{\sqrt{d}}
++\alpha_l\log\left(R_j+0.05\right)\right),
+\end{equation}
+where $j$ indexes the patch tokens and $\alpha_l$ is learned per block (initialised to 0.5).
+
+%% =========================================================================================
+\section*{3\quad Parameter budget}
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\caption{BT-ViT v1: parameters by component.}
+\label{tab:params}
+\small
+\begin{tabular}{@{}lrl@{}}
+\toprule
+Component & Parameters & Initialisation \\
+\midrule
+Conv stem (3 blocks)                         & 287{,}456   & Random \\
+Patch projection                             & 98{,}496    & Random \\
+Transformer blocks 1--4                      & 1{,}779{,}456 & DeiT-Tiny (ImageNet) \\
+Transformer blocks 5--8                      & 1{,}779{,}456 & DeiT-Tiny (ImageNet) \\
+CLS, position and type embeddings, $\alpha$  & 38{,}788    & CLS and position from DeiT-Tiny \\
+Segmentation decoder and head                & 701{,}411   & Random \\
+Clinical-token MLPs                          & 151{,}296   & Random \\
+Classification head                          & 74{,}306    & Random \\
+Final LayerNorm                              & 384         & DeiT-Tiny \\
+\midrule
+\textbf{Total}                               & \textbf{4{,}911{,}049} & \\
+\bottomrule
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
+%% =========================================================================================
+\clearpage
+\section*{4\quad Architecture variants}
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\caption{Architecture variants and results (AUC).}
+\label{tab:variants}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}l p{6.2cm} c l ccc@{}}
+\toprule
+Variant & Description & Params & Status & Test & RIM-ONE & DRISHTI-GS \\
+\midrule
+V0: Pure ViT & DeiT-Tiny, image only (baseline) & 5.5\,M & Trained & 0.937 & 0.927 & 0.844 \\
+V1: BT-ViT v1 & Conv stem + 8 DeiT blocks; segmentation branch; clinical tokens and rim attention in
+blocks 5--8 & 4.9\,M & Trained & 0.937 & 0.896 & 0.817 \\
+V2: BT-ViT v2 & Full pretrained DeiT (12 blocks); segmentation branch at block 4; gated clinical tokens and
+rim attention in blocks 9--12 & 6.7\,M & Trained & \textbf{0.937} & \textbf{0.943} & \textbf{0.876} \\
+\midrule
+V2 + recipe variants & Training-recipe variants: EMA, label smoothing, $\lambda_{\mathrm{bio}}=1$ & 6.7\,M & Running & -- & -- & -- \\
+V2 + open gates & Gates free to open (tests whether the clinical tokens help) & 6.7\,M & Queued & -- & -- & -- \\
+B1: Nasrin et al.~\cite{nasrin2026} & Separate CNN for segmentation + $8{\times}8$-patch ViT; biomarkers
+concatenated at the end & 10.6\,M & Seg.\ only & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\item[] All rows: one seed with horizontal-flip test-time augmentation; final results will be five-seed means.
+RIM-ONE and DRISHTI-GS are external datasets never seen during training. Best value per column in bold.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\paragraph{What the comparison shows.}
+\begin{itemize}
+\item \emph{V0 $\to$ V1:} replacing pretrained components with newly initialised ones reduced generalisation
+to the external datasets.
+\item \emph{V1 $\to$ V2:} keeping the complete pretrained ViT and adding segmentation supervision gave the
+best external results.
+\item In V2 the learned gates remained closed, so its gain comes from multi-task learning of the optic-disc
+anatomy rather than, so far, from the clinical tokens; the open-gates run tests this directly.
+\end{itemize}
+
+\paragraph{Further variants to consider.} The fusion alternatives that reviewers commonly expect, which would
+strengthen the study:
+\begin{itemize}
+\item \emph{Early fusion:} biomarker tokens enter at the input (block 1).
+\item \emph{Late fusion:} biomarkers concatenated at the end, as in the reference model~\cite{nasrin2026}.
+\item \emph{Cross-attention fusion:} image tokens attend to the biomarkers through a separate cross-attention layer.
+\item \emph{Segmentation-branch position:} after block 4 versus block 8.
+\item \emph{Backbone size:} DeiT-Tiny versus DeiT-Small~\cite{touvron2021}.
+\end{itemize}
+
+\begin{thebibliography}{2}\footnotesize
+\bibitem{nasrin2026} A.~Nasrin \emph{et al.}, ``A lightweight vision transformer and retinal biomarker fusion
+framework for early glaucoma detection,'' \emph{J. Clin. Med.}, vol.~15, p.~5651, 2026.
+\bibitem{touvron2021} H.~Touvron, M.~Cord, M.~Douze, F.~Massa, A.~Sablayrolles and H.~J\'egou,
+``Training data-efficient image transformers \& distillation through attention,'' in \emph{Proc. ICML},
+2021, pp.~10347--10357.
+\end{thebibliography}
+
+\end{document}

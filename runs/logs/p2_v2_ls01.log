@@ -1,0 +1,34 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+biomarker normalisation (train, expert masks): {'cdr_area': (0.276, 0.12), 'vcdr': (0.496, 0.118), 'hcdr': (0.538, 0.109), 'rim_inferior': (0.273, 0.032), 'rim_superior': (0.278, 0.03), 'rim_nasal_temporal': (0.45, 0.039), 'nrr': (1.236, 0.196), 'isnt_violation': (0.026, 0.041), 'disc_area': (0.353, 0.036), 'disc_ellipticity': (1.146, 0.11), 'disc_edge': (0.93, 0.225), 'cup_edge': (0.854, 0.216)}
+[BTViT_v2_ls01] epoch 001 loss=2.8823 val_auc=0.8079 best=0.8079@1 (140s)
+[BTViT_v2_ls01] epoch 002 loss=2.0960 val_auc=0.8944 best=0.8944@2 (124s)
+[BTViT_v2_ls01] epoch 003 loss=1.7723 val_auc=0.8887 best=0.8944@2 (115s)
+[BTViT_v2_ls01] epoch 004 loss=1.4994 val_auc=0.9305 best=0.9305@4 (112s)
+[BTViT_v2_ls01] epoch 005 loss=1.2829 val_auc=0.9257 best=0.9305@4 (110s)
+[BTViT_v2_ls01] epoch 006 loss=1.1665 val_auc=0.9235 best=0.9305@4 (104s)
+[BTViT_v2_ls01] epoch 007 loss=1.0121 val_auc=0.9291 best=0.9305@4 (55s)
+[BTViT_v2_ls01] epoch 008 loss=0.9895 val_auc=0.9341 best=0.9341@8 (50s)
+[BTViT_v2_ls01] epoch 009 loss=0.9486 val_auc=0.9284 best=0.9341@8 (51s)
+[BTViT_v2_ls01] epoch 010 loss=0.9123 val_auc=0.9443 best=0.9443@10 (52s)
+[BTViT_v2_ls01] epoch 011 loss=0.8661 val_auc=0.9393 best=0.9443@10 (51s)
+[BTViT_v2_ls01] epoch 012 loss=0.8916 val_auc=0.9276 best=0.9443@10 (51s)
+[BTViT_v2_ls01] epoch 013 loss=0.8395 val_auc=0.9119 best=0.9443@10 (51s)
+[BTViT_v2_ls01] epoch 014 loss=0.8367 val_auc=0.9279 best=0.9443@10 (56s)
+[BTViT_v2_ls01] epoch 015 loss=0.8447 val_auc=0.9368 best=0.9443@10 (54s)
+[BTViT_v2_ls01] epoch 016 loss=0.8233 val_auc=0.9289 best=0.9443@10 (92s)
+[BTViT_v2_ls01] epoch 017 loss=0.8033 val_auc=0.9208 best=0.9443@10 (56s)
+[BTViT_v2_ls01] epoch 018 loss=0.7892 val_auc=0.9247 best=0.9443@10 (50s)
+[BTViT_v2_ls01] epoch 019 loss=0.7899 val_auc=0.9341 best=0.9443@10 (52s)
+[BTViT_v2_ls01] epoch 020 loss=0.8036 val_auc=0.9194 best=0.9443@10 (43s)
+[BTViT_v2_ls01] epoch 021 loss=0.7408 val_auc=0.9259 best=0.9443@10 (44s)
+[BTViT_v2_ls01] epoch 022 loss=0.7319 val_auc=0.9119 best=0.9443@10 (45s)
+[BTViT_v2_ls01] epoch 023 loss=0.7091 val_auc=0.8968 best=0.9443@10 (60s)
+[BTViT_v2_ls01] epoch 024 loss=0.7299 val_auc=0.9114 best=0.9443@10 (46s)
+[BTViT_v2_ls01] epoch 025 loss=0.6994 val_auc=0.8972 best=0.9443@10 (31s)
+[BTViT_v2_ls01] val: AUC=0.944 acc=0.935/0.935  test: AUC=0.926 acc=0.910/0.910  RIM-ONE: AUC=0.943 acc=0.878/0.878  DRISHTI-GS: AUC=0.843 acc=0.743/0.743  (acc: Youden/max-acc threshold)
+            disc_dice  disc_iou  cup_dice  cup_iou  vcdr_abs_err  cdr_area_abs_err
+group                                                                             
+DRISHTI-GS     0.9666    0.9356    0.7824   0.6495        0.1514            0.1659
+RIM-ONE        0.9334    0.8769    0.7284   0.6021        0.0857            0.0824
+test           0.9536    0.9119    0.8491   0.7475        0.0697            0.0657
+val            0.9549    0.9144    0.8438   0.7397        0.0688            0.0621

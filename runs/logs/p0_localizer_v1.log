@@ -1,0 +1,75 @@
+epoch 01 loss=1.5681 val_dice=0.0986 best=0.0986 (94s)
+epoch 02 loss=1.4180 val_dice=0.2800 best=0.2800 (42s)
+epoch 03 loss=1.3533 val_dice=0.6139 best=0.6139 (35s)
+epoch 04 loss=1.2796 val_dice=0.6729 best=0.6729 (34s)
+epoch 05 loss=1.1809 val_dice=0.8368 best=0.8368 (33s)
+epoch 06 loss=1.0507 val_dice=0.5164 best=0.8368 (35s)
+epoch 07 loss=0.9085 val_dice=0.8586 best=0.8586 (38s)
+epoch 08 loss=0.7244 val_dice=0.8899 best=0.8899 (37s)
+epoch 09 loss=0.5139 val_dice=0.7987 best=0.8899 (62s)
+epoch 10 loss=0.3312 val_dice=0.9283 best=0.9283 (37s)
+epoch 11 loss=0.2079 val_dice=0.9260 best=0.9283 (37s)
+epoch 12 loss=0.1831 val_dice=0.9396 best=0.9396 (35s)
+epoch 13 loss=0.1450 val_dice=0.9279 best=0.9396 (38s)
+epoch 14 loss=0.1247 val_dice=0.9345 best=0.9396 (44s)
+epoch 15 loss=0.1191 val_dice=0.9241 best=0.9396 (41s)
+epoch 16 loss=0.1089 val_dice=0.9451 best=0.9451 (36s)
+epoch 17 loss=0.0964 val_dice=0.9400 best=0.9451 (35s)
+epoch 18 loss=0.0963 val_dice=0.9362 best=0.9451 (33s)
+epoch 19 loss=0.0927 val_dice=0.8718 best=0.9451 (33s)
+epoch 20 loss=0.0975 val_dice=0.9481 best=0.9481 (35s)
+epoch 21 loss=0.0834 val_dice=0.9507 best=0.9507 (39s)
+epoch 22 loss=0.0816 val_dice=0.9526 best=0.9526 (47s)
+epoch 23 loss=0.0780 val_dice=0.9483 best=0.9526 (34s)
+epoch 24 loss=0.0795 val_dice=0.9516 best=0.9526 (39s)
+epoch 25 loss=0.0760 val_dice=0.9511 best=0.9526 (37s)
+epoch 26 loss=0.0725 val_dice=0.9556 best=0.9556 (39s)
+epoch 27 loss=0.0713 val_dice=0.9518 best=0.9556 (35s)
+epoch 28 loss=0.0720 val_dice=0.9533 best=0.9556 (39s)
+epoch 29 loss=0.0694 val_dice=0.9539 best=0.9556 (36s)
+epoch 30 loss=0.0695 val_dice=0.9561 best=0.9561 (35s)
+Traceback (most recent call last):
+  File "C:\Users\anand\OneDrive\Desktop\glaucoma\clinical_decision_support_system\scripts\p0_train_localizer.py", line 62, in <module>
+    main()
+  File "C:\Users\anand\OneDrive\Desktop\glaucoma\clinical_decision_support_system\scripts\p0_train_localizer.py", line 38, in main
+    for x, y in train_dl:
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\dataloader.py", line 701, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\dataloader.py", line 1465, in _next_data
+    return self._process_data(data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\dataloader.py", line 1491, in _process_data
+    data.reraise()
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\_utils.py", line 715, in reraise
+    raise exception
+RuntimeError: Caught RuntimeError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\_utils\worker.py", line 351, in _worker_loop
+    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\_utils\fetch.py", line 55, in fetch
+    return self.collate_fn(data)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\_utils\collate.py", line 398, in default_collate
+    return collate(batch, collate_fn_map=default_collate_fn_map)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\_utils\collate.py", line 211, in collate
+    return [
+           ^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\_utils\collate.py", line 212, in <listcomp>
+    collate(samples, collate_fn_map=collate_fn_map)
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\_utils\collate.py", line 155, in collate
+    return collate_fn_map[elem_type](batch, collate_fn_map=collate_fn_map)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\utils\data\_utils\collate.py", line 270, in collate_tensor_fn
+    storage = elem._typed_storage()._new_shared(numel, device=elem.device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\storage.py", line 1180, in _new_shared
+    untyped_storage = torch.UntypedStorage._new_shared(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anand\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torch\storage.py", line 400, in _new_shared
+    return cls._new_using_filename_cpu(size)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Couldn't open shared file mapping: <torch_27320_1382851917_3286>, error code: <1455>
+

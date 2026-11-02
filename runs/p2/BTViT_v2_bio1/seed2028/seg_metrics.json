@@ -1,0 +1,34 @@
+{
+  "DRISHTI-GS": {
+    "disc_dice": 0.971,
+    "disc_iou": 0.944,
+    "cup_dice": 0.8382,
+    "cup_iou": 0.7263,
+    "vcdr_abs_err": 0.0952,
+    "cdr_area_abs_err": 0.1315
+  },
+  "RIM-ONE": {
+    "disc_dice": 0.9289,
+    "disc_iou": 0.8704,
+    "cup_dice": 0.7285,
+    "cup_iou": 0.6075,
+    "vcdr_abs_err": 0.0876,
+    "cdr_area_abs_err": 0.0877
+  },
+  "test": {
+    "disc_dice": 0.9554,
+    "disc_iou": 0.9151,
+    "cup_dice": 0.8776,
+    "cup_iou": 0.7877,
+    "vcdr_abs_err": 0.0544,
+    "cdr_area_abs_err": 0.0553
+  },
+  "val": {
+    "disc_dice": 0.9566,
+    "disc_iou": 0.9174,
+    "cup_dice": 0.8804,
+    "cup_iou": 0.7907,
+    "vcdr_abs_err": 0.0525,
+    "cdr_area_abs_err": 0.0521
+  }
+}

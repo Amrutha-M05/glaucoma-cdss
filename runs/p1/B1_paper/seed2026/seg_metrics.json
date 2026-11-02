@@ -1,0 +1,33 @@
+{
+  "best_epoch": 29,
+  "DRISHTI-GS": {
+    "disc_dice": 0.9694,
+    "disc_iou": 0.941,
+    "cup_dice": 0.8854,
+    "cup_iou": 0.7995
+  },
+  "RIM-ONE": {
+    "disc_dice": 0.9299,
+    "disc_iou": 0.8711,
+    "cup_dice": 0.6819,
+    "cup_iou": 0.5564
+  },
+  "test": {
+    "disc_dice": 0.9543,
+    "disc_iou": 0.9132,
+    "cup_dice": 0.8852,
+    "cup_iou": 0.7993
+  },
+  "train": {
+    "disc_dice": 0.9602,
+    "disc_iou": 0.9241,
+    "cup_dice": 0.8838,
+    "cup_iou": 0.7977
+  },
+  "val": {
+    "disc_dice": 0.9556,
+    "disc_iou": 0.9161,
+    "cup_dice": 0.8839,
+    "cup_iou": 0.7969
+  }
+}

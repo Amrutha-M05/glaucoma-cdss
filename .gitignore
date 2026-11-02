@@ -1,0 +1,10 @@
+# Model weights (large; regenerate with the training scripts)
+*.pth
+*.pt
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Datasets are not part of this repository (see README)
+data/
